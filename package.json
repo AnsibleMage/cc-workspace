@@ -1,0 +1,78 @@
+{
+  "name": "cc-workspace",
+  "version": "1.0.0",
+  "description": "Claude Code 통합 워크스페이스 - 메모 / PowerShell / 폴더 3분할 데스크톱 앱",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "dist:portable": "electron-builder --win portable",
+    "dist:installer": "electron-builder --win nsis"
+  },
+  "author": {
+    "name": "AnsibleMage",
+    "url": "https://github.com/AnsibleMage"
+  },
+  "homepage": "https://github.com/AnsibleMage/cc-workspace",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnsibleMage/cc-workspace.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@lydell/node-pty": "1.2.0-beta.12",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "devDependencies": {
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.ann.ccworkspace",
+    "productName": "CC Workspace",
+    "copyright": "Copyright © 2026 AnsibleMage (https://github.com/AnsibleMage)",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/@lydell/**"
+    ],
+    "files": [
+      "main.js",
+      "renderer.js",
+      "index.html",
+      "styles.css",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "CC-Workspace-Portable-${version}.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CC Workspace"
+    }
+  }
+}

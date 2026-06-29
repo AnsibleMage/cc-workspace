@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>CC Workspace</title>
+  <link rel="stylesheet" href="node_modules/xterm/css/xterm.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- 1. 상단: 메모 -->
+    <section class="pane" id="memo-pane">
+      <header class="pane-head">
+        <span class="pane-title">📝 메모</span>
+        <span id="memo-file" class="cwd"></span>
+        <span class="pane-actions">
+          <button id="memo-open" class="btn">열기</button>
+          <button id="memo-save" class="btn">저장</button>
+        </span>
+      </header>
+      <textarea id="memo" placeholder="여기에 메모를 작성하세요..." spellcheck="false"></textarea>
+    </section>
+
+    <!-- 2. 중앙: PowerShell 터미널 -->
+    <section class="pane" id="term-pane">
+      <header class="pane-head">
+        <span class="pane-title">⌨ PowerShell</span>
+      </header>
+      <div id="terminal"></div>
+    </section>
+
+    <!-- 3. 하단: 폴더 -->
+    <section class="pane" id="files-pane">
+      <header class="pane-head">
+        <span class="pane-title">📁 폴더</span>
+        <span id="cwd" class="cwd"></span>
+      </header>
+      <ul id="file-list"></ul>
+    </section>
+
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
