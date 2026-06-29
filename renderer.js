@@ -1,7 +1,7 @@
 // renderer.js - 렌더러 (UI 로직)
 // nodeIntegration: true, contextIsolation: false 환경이라 require 직접 사용
 
-const { ipcRenderer } = require('electron');
+const { ipcRenderer, clipboard } = require('electron');
 const { Terminal } = require('xterm');
 const { FitAddon } = require('xterm-addon-fit');
 
@@ -28,6 +28,28 @@ window.addEventListener('resize', fitTerminal);
 // pty <-> 터미널 양방향 연결
 ipcRenderer.on('pty:data', (event, data) => term.write(data));
 term.onData((data) => ipcRenderer.send('pty:input', data));
+
+// 터미널 복사/붙여넣기 — xterm 은 선택만 하고 클립보드 연동을 자동으로 하지 않으므로 직접 배선한다.
+// Ctrl+C / Ctrl+Insert : 선택 영역이 있으면 복사, 없으면 그대로 통과(SIGINT 유지)
+// Ctrl+V / Shift+Insert: 클립보드를 pty 로 붙여넣기 (bracketed paste 모드 존중)
+term.attachCustomKeyEventHandler((e) => {
+  if (e.type !== 'keydown') return true;
+  const isCopy = (e.ctrlKey && !e.shiftKey && e.code === 'KeyC') || (e.ctrlKey && e.code === 'Insert');
+  const isPaste = (e.ctrlKey && !e.shiftKey && e.code === 'KeyV') || (e.shiftKey && e.code === 'Insert');
+  if (isCopy) {
+    if (term.hasSelection()) {
+      clipboard.writeText(term.getSelection());
+      return false; // 복사했으면 ^C 를 셸로 보내지 않음
+    }
+    return true; // 선택 없으면 Ctrl+C = SIGINT 로 통과
+  }
+  if (isPaste) {
+    const text = clipboard.readText();
+    if (text) term.paste(text);
+    return false;
+  }
+  return true;
+});
 
 // ---------- 2. 메모 ----------
 const memo = document.getElementById('memo');
@@ -81,7 +103,6 @@ ipcRenderer.on('menu:save', () => saveFile(false));
 ipcRenderer.on('menu:saveAs', () => saveFile(true));
 
 // ---------- 3. 폴더 ----------
-const { clipboard } = require('electron');
 const fileList = document.getElementById('file-list');
 const cwdLabel = document.getElementById('cwd');
 
