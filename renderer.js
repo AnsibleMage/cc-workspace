@@ -39,11 +39,13 @@ term.attachCustomKeyEventHandler((e) => {
   if (isCopy) {
     if (term.hasSelection()) {
       clipboard.writeText(term.getSelection());
-      return false; // 복사했으면 ^C 를 셸로 보내지 않음
+      e.preventDefault(); // 네이티브 복사가 빈 선택으로 클립보드를 덮어쓰지 않게
+      return false;       // 복사했으면 ^C 를 셸로 보내지 않음
     }
     return true; // 선택 없으면 Ctrl+C = SIGINT 로 통과
   }
   if (isPaste) {
+    e.preventDefault(); // 네이티브 paste 와 중복 실행(이중 붙여넣기) 방지
     const text = clipboard.readText();
     if (text) term.paste(text);
     return false;
